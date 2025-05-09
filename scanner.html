@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Сканер штрих-кодів</title>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></html>
+</head>
+<body>
+    <div id="reader" style="width: 600px;"></div>
+    <p id="result"></p>
+    <button onclick="stopScanner()">Зупинити сканер</button>
+
+    <script>
+        const html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { fps: 10, qrbox: 250 });
+        let scannerRunning = false;
+
+        function onScanSuccess(decodedText, decodedResult) {
+            if (!scannerRunning) return; // Уникаємо повторних сканувань
+            scannerRunning = false;
+            document.getElementById("result").innerHTML = `Знайдено штрих-код: ${decodedText}`;
+            html5QrcodeScanner.clear();
+            // Тут можна додати відправку результату в бот (наприклад, через Telegram API)
+        }
+
+        function startScanner() {
+            if (!scannerRunning) {
+                html5QrcodeScanner.render(onScanSuccess);
+                scannerRunning = true;
+            }
+        }
+
+        function stopScanner() {
+            if (scannerRunning) {
+                html5QrcodeScanner.clear();
+                scannerRunning = false;
+                document.getElementById("result").innerHTML = "Сканер зупинено.";
+            }
+        }
+
+        // Автоматичний старт при завантаженні
+        window.onload = startScanner;
+    </script>
+</body>
+</html>
